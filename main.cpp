@@ -46,7 +46,7 @@ void utilizator::modifica()
 			fil.write((char*)&(utilizator), sizeof(utilizator));
 			break;
             }
-		fil.read((char*)&x, sizeof(u));
+		fil.read((char*)&x, sizeof(x));
         }
 	fil.close();
 }
