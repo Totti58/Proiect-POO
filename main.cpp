@@ -1,12 +1,15 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include <fstream>
 using namespace std;
 int logat = 0;	// pentru a vedea daca utilizatorul este logat sau nu
 class utilizator
 {
 private:
-	char nume[50];
-	char email[50];
-	char parola[50];
+	std::string nume[50];
+	std::string email[50];
+	std::string parola[50];
 	int victorie;
 	int infrangere;
 
@@ -17,8 +20,8 @@ public:
 		victorie = 0;
 		infrangere = 0;
 	}
-	int creeaza_utilizator_nou(char nume[], char email[], char parola[]);
-	int login(char email[], char parola[]);
+	int creeaza_utilizator_nou(std::string nume[], std::string email[], std::string parola[]);
+	int login(std::string email[], std::string parola[]);
 	void arata_date(int arata_nume);
 	void victorii()
 	{
@@ -36,21 +39,21 @@ void utilizator::modifica()
 	fstream fil;
 	fil.open("utilizator.dat",ios::in| ios::out|ios::binary);
 	utilizator x;
-	fil.read((char*)&x, sizeof(x));
+	fil.read((std::string*)&x, sizeof(x));
 	while (!fil.eof())
         {
 		if (!strcmp(x.email, utilizator.email))
             {
 			fil.seekg(0,ios::cur);
 			fil.seekp(fil.tellg() - sizeof(utilizator));
-			fil.write((char*)&(utilizator), sizeof(utilizator));
+			fil.write((std::string*)&(utilizator), sizeof(utilizator));
 			break;
             }
-		fil.read((char*)&x, sizeof(x));
+		fil.read((std::string*)&x, sizeof(u));
         }
 	fil.close();
 }
-int utilizator::creeaza_utilizator_nou(char nume[], char email[], char parola[])
+int utilizator::creeaza_utilizator_nou(std::string nume[], std::string email[], std::string parola[])
 {
 	ifstream fin;
 	ofstream fout;
@@ -59,7 +62,7 @@ int utilizator::creeaza_utilizator_nou(char nume[], char email[], char parola[])
 	utilizator x;
 	while (!fin.eof())
         {
-		fin.read((char*)&x, sizeof(x));
+		fin.read((std::string*)&x, sizeof(x));
 		if (!strcmp(x.email, email))
             {
 			fin.close();
@@ -70,12 +73,12 @@ int utilizator::creeaza_utilizator_nou(char nume[], char email[], char parola[])
 	strcpy(x.nume, nume);
 	strcpy(x.email, email);
 	strcpy(x.parola, parola);
-	fout.write((char*)&x, sizeof(x));
+	fout.write((std::string*)&x, sizeof(x));
 	fin.close();
 	fout.close();
 	return 1;							// utilizator creat cu succes
 }
-int utilizator::login(char email[], char parola[])
+int utilizator::login(std::string email[], std::string parola[])
 {
 	if (logat == 1)
 		return 1;
@@ -84,7 +87,7 @@ int utilizator::login(char email[], char parola[])
 	utilizator x;
 	while (!fin.eof())
         {
-		fin.read((char*)&x, sizeof(x));
+		fin.read((std::string*)&x, sizeof(x));
 		if (!strcmp(x.email, email))
             {
 			fin.close();
@@ -119,7 +122,7 @@ class linked_list
 private:
 	struct node         // un nod al datelor unei liste
         {
-		char data[100];
+		std::string data[100];
 		node* next;
         };
 	node* head; 		// pointerul listei
@@ -130,7 +133,7 @@ public:
 		size = 0;
 		head = NULL;
         }
-	void push(char x[])       // functie pentru a pune datele in lista
+	void push(std::string x[])       // functie pentru a pune datele in lista
         {
 		node* temp = new node;
 		strcpy(temp->data, x);
@@ -151,7 +154,7 @@ public:
         {
 		return size;
         }
-	char* get(int idx)       // functie pentru a gasi un element din lista folosind indexul
+	std::string* get(int idx)       // functie pentru a gasi un element din lista folosind indexul
         {
 		node* temp = head;
 		int i = 0;
@@ -170,13 +173,13 @@ void login()
         {
 		cout << "\n\nEnter (1) pentru a te loga sau (2) creeaza un utilizator nou";
 		cout << "\n-> ";
-		char ch;
+		std::string ch;
 		cin >> ch;
 		switch(ch)
             {
 			case '2':
                 {
-				char nume[50], email[50], parola[50];
+				std::string nume[50], email[50], parola[50];
 				cout << "\nEnter nume: ";
 				cin >> nume;
 				cout << "\nEnter email: ";
@@ -197,7 +200,7 @@ void login()
                 }
 			case '1':
                 {
-				char email[50], parola[50];
+				std::string email[50], parola[50];
 				cout << "\nEnter email: ";
 				cin >> email;
 				cout << "\nEnter parola: ";
@@ -220,14 +223,14 @@ void login()
 class Spanzuratoare
 {
 private:
-	char* cuvant;
-	char* litere_folosite;
+	std::string* cuvant;
+	std::string* litere_folosite;
 	linked_list cuvinte;
 	void primeste_cuvant();
 	void litere_folosite_pana_acum();
-	int contine(char*, char);
+	int contine(std::string*, std::string);
 	int ghicite();
-	char* temp_string(char);
+	std::string* temp_string(std::string);
 public:
 	Spanzuratoare();
 	void reguli();
@@ -239,7 +242,7 @@ void Spanzuratoare::primeste_cuvant()      // primeste un cuvant aleatoriu din l
 	if (cuvinte.getSize() == 0)
         {
 		ifstream fin("cuvinte.txt", ios::in);
-		char cuvant[100];
+		std::string cuvant[100];
 		while(!fin.eof())
             {
 			fin >> cuvant;
@@ -258,7 +261,7 @@ void Spanzuratoare::litere_folosite_pana_acum()     // arata literele folosite p
 	for (int i = 0; i < len; i++)
 		cout << litere_folosite[i] << ", ";
 }
-int Spanzuratoare::contine(char r[], char ch)      // verifica daca un string contine o anumita litera
+int Spanzuratoare::contine(std::string r[], std::string ch)      // verifica daca un string contine o anumita litera
 {
 	int len = strlen(r);
 	for (int i = 0; i < len; i++)
@@ -270,7 +273,7 @@ Spanzuratoare::Spanzuratoare()       // constructor
 {
 	cout << "Bine ai venit! Apasa (1) pentru a incepe jocul, apasa (2) pentru a iesi.";
 	cout << "\n->";
-	char alegere;
+	std::string alegere;
 	cin >> alegere;
 	// apasa orice tasta pentru a continua
 	switch(alegere)
@@ -300,7 +303,7 @@ void Spanzuratoare::Incepe_jocul()      // manipulator de joc
         }
 	primeste_cuvant();
 	int greseli = 0;
-	litere_folosite = new char[26];
+	litere_folosite = new std::string[26];
 	strcpy(litere_folosite, "");
 	while (greseli < 5)
         {
@@ -314,7 +317,7 @@ void Spanzuratoare::Incepe_jocul()      // manipulator de joc
 			break;
             }
 		cout << "->";
-		char a;
+		std::string a;
 		cin >> a;
 		if (!isalpha(a))
             {
@@ -326,7 +329,7 @@ void Spanzuratoare::Incepe_jocul()      // manipulator de joc
             }
 		else
             {
-			char temp[2];
+			std::string temp[2];
 			temp[0] = tolower(a);
 			temp[1] = '\0';
 			strcat(litere_folosite, temp);
@@ -349,7 +352,7 @@ void Spanzuratoare::Incepe_jocul()      // manipulator de joc
         }
 	utilizator.arata_date(0);
 	cout << "Vrei sa joci din nou? (d/[n])\n";
-	char ch;
+	std::string ch;
 	cin >> ch;
 	if (tolower(ch) == 'y')
 		Incepe_jocul();		// joaca din nou
@@ -364,14 +367,14 @@ int Spanzuratoare::ghicite()       // verifica daca cuvantul ghicit este corect
 	int m = strlen(litere_folosite);
 	int n = strlen(cuvant);
 	int len = 0;
-	char string[100];		// cuvinte ghicite pana acum
+	std::string string[100];		// cuvinte ghicite pana acum
 	strcpy(string, "");
 	for (int i = 0; i < n; i++)
         {
 		if (contine(litere_folosite, cuvant[i]))
             {
 			len++;
-			char temp[2];
+			std::string temp[2];
 			temp[0] = cuvant[i];
 			temp[1] = '\0';
 			strcat(string, temp);
