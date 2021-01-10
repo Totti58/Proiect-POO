@@ -1,395 +1,406 @@
+#include <Windows.h>
+#include <conio.h>
 #include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include <fstream>
-using namespace std;
-int logat = 0;	// pentru a vedea daca utilizatorul este logat sau nu
-class utilizator
-{
-private:
-	std::string nume[50];
-	std::string email[50];
-	std::string parola[50];
-	int victorie;
-	int infrangere;
+#include <string>
+#include <stdio.h>
 
-	void modifica();
-public:
-	utilizator()
-	{
-		victorie = 0;
-		infrangere = 0;
-	}
-	int creeaza_utilizator_nou(std::string nume[], std::string email[], std::string parola[]);
-	int login(std::string email[], std::string parola[]);
-	void arata_date(int arata_nume);
-	void victorii()
-	{
-		victorie++;
-		modifica();
-	}
-	void infrangeri()
-	{
-		infrangere++;
-		modifica();
-	}
-} utilizator;
-void utilizator::modifica()
+using namespace std;
+
+class Hangman
 {
-	fstream fil;
-	fil.open("utilizator.dat",ios::in| ios::out|ios::binary);
-	utilizator x;
-	fil.read((std::string*)&x, sizeof(x));
-	while (!fil.eof())
-        {
-		if (!strcmp(x.email, utilizator.email))
-            {
-			fil.seekg(0,ios::cur);
-			fil.seekp(fil.tellg() - sizeof(utilizator));
-			fil.write((std::string*)&(utilizator), sizeof(utilizator));
-			break;
-            }
-		fil.read((std::string*)&x, sizeof(u));
-        }
-	fil.close();
-}
-int utilizator::creeaza_utilizator_nou(std::string nume[], std::string email[], std::string parola[])
-{
-	ifstream fin;
-	ofstream fout;
-	fin.open("utilizator.dat", ios::in);
-	fout.open("utilizator.dat", ios::app);
-	utilizator x;
-	while (!fin.eof())
-        {
-		fin.read((std::string*)&x, sizeof(x));
-		if (!strcmp(x.email, email))
-            {
-			fin.close();
-			fout.close();
-			return -1;					// utilizatorul este deja existent
-            }
-        }
-	strcpy(x.nume, nume);
-	strcpy(x.email, email);
-	strcpy(x.parola, parola);
-	fout.write((std::string*)&x, sizeof(x));
-	fin.close();
-	fout.close();
-	return 1;							// utilizator creat cu succes
-}
-int utilizator::login(std::string email[], std::string parola[])
-{
-	if (logat == 1)
-		return 1;
-	ifstream fin;
-	fin.open("utilizator.dat", ios::in);
-	utilizator x;
-	while (!fin.eof())
-        {
-		fin.read((std::string*)&x, sizeof(x));
-		if (!strcmp(x.email, email))
-            {
-			fin.close();
-			if (!strcmp(x.parola, parola))
-                {
-				logat = 1;
-				utilizator = z;
-				return 1;	// logat cu succes
-                }
-			else
-				return 0;	// parola incorecta
-            }
-        }
-	fin.close();
-	return -1;				// utilizatorul nu exista
-}
-void utilizator::arata_date(int arata_nume)
-{
-	cout << "\n\n\n";
-	if (arata_nume)
-        {
-		cout << "Nume: " << nume << endl;
-		cout << "Email: " << email << endl;
-        }
-	cout << "Numarul de jocuri jucate: " << victorie + infrangere << endl;
-	cout << "Victorii: " << victorie << endl;
-	cout << "Infrangeri: " << infrangere << endl;
-	cin.ignore();
-}
-class linked_list
-{
-private:
-	struct node         // un nod al datelor unei liste
-        {
-		std::string data[100];
-		node* next;
-        };
-	node* head; 		// pointerul listei
-	int size;
-public:
-	linked_list()
-        {
-		size = 0;
-		head = NULL;
-        }
-	void push(std::string x[])       // functie pentru a pune datele in lista
-        {
-		node* temp = new node;
-		strcpy(temp->data, x);
-		temp -> next = head;
-		head = temp;
-		size++;
-        }
-	void show()              // functie pentru a printa toate datele listei
-        {
-		node* temp = head;
-		while (temp!=NULL)
-            {
-			cout << temp -> data << "\n";
-			temp = temp -> next;
-            }
-        }
-	int getSize()            // functie pentru a determina marimea listei
-        {
-		return size;
-        }
-	std::string* get(int idx)       // functie pentru a gasi un element din lista folosind indexul
-        {
-		node* temp = head;
-		int i = 0;
-		while (temp!=NULL && i < idx)
-            {
-			temp = temp->next;
-			i++;
-            }
-		return temp->data;
-        }
-};
-void login()
-{
-	utilizator x;
-	while (!logat)
-        {
-		cout << "\n\nEnter (1) pentru a te loga sau (2) creeaza un utilizator nou";
-		cout << "\n-> ";
-		std::string ch;
-		cin >> ch;
-		switch(ch)
-            {
-			case '2':
-                {
-				std::string nume[50], email[50], parola[50];
-				cout << "\nEnter nume: ";
-				cin >> nume;
-				cout << "\nEnter email: ";
-				cin >> email;
-				cout << "\nEnter parola: ";
-				cin >> parola;
-				int status = x.creeaza_utilizator_nou(nume, email, parola);
-				switch(status)
-                    {
-					case 1:
-						cout << "\n\nUtilizator creat cu succes";
-						break;
-					default:
-						cout << "\n\nEmail-ul este deja folosit!";
-						break;
-                    }
-				break;
-                }
-			case '1':
-                {
-				std::string email[50], parola[50];
-				cout << "\nEnter email: ";
-				cin >> email;
-				cout << "\nEnter parola: ";
-				cin >> parola;
-				int status = x.login(email, parola);
-				switch (status)
-                    {
-					case 1:
-						cout << "\nHi ";
-						utilizator.arata_date(1);
-						break;
-					default:
-						cout << "\n\nEmail-ul sau parola sunt incorecte.";
-                    }
-				break;
-                }
-            }
-        }
-}
-class Spanzuratoare
-{
-private:
-	std::string* cuvant;
-	std::string* litere_folosite;
-	linked_list cuvinte;
-	void primeste_cuvant();
-	void litere_folosite_pana_acum();
-	int contine(std::string*, std::string);
-	int ghicite();
-	std::string* temp_string(std::string);
-public:
-	Spanzuratoare();
-	void reguli();
-	void Incepe_jocul();
-};
-void Spanzuratoare::primeste_cuvant()      // primeste un cuvant aleatoriu din lista de cuvinte
-    {
-	int size = cuvinte.getSize();
-	if (cuvinte.getSize() == 0)
-        {
-		ifstream fin("cuvinte.txt", ios::in);
-		std::string cuvant[100];
-		while(!fin.eof())
-            {
-			fin >> cuvant;
-			cuvinte.push(cuvant);
-            }
-		fin.close();
-        }
-	size = cuvinte.getSize();
-	srand(time(NULL));
-	int r = rand()%size;
-	cuvant = cuvinte.get(r);
-}
-void Spanzuratoare::litere_folosite_pana_acum()     // arata literele folosite pana acum
-{
-	int len = strlen(litere_folosite);
-	for (int i = 0; i < len; i++)
-		cout << litere_folosite[i] << ", ";
-}
-int Spanzuratoare::contine(std::string r[], std::string ch)      // verifica daca un string contine o anumita litera
-{
-	int len = strlen(r);
-	for (int i = 0; i < len; i++)
-		if (r[i] == ch)
-			return 1;
-	return 0;
-}
-Spanzuratoare::Spanzuratoare()       // constructor
-{
-	cout << "Bine ai venit! Apasa (1) pentru a incepe jocul, apasa (2) pentru a iesi.";
-	cout << "\n->";
-	std::string alegere;
-	cin >> alegere;
-	// apasa orice tasta pentru a continua
-	switch(alegere)
-        {
-		case '1':
-			cout << "Sa incepem jocul!\n";
-			reguli();
-			Incepe_jocul();
-			break;
-		case '2':
-			cout << "O zi placuta!";
-			exit(0);
-        }
-}
-void Spanzuratoare::reguli()     // regulile jocului
-{
-	cout << "Reguli:\n";
-	cout << "Ghiceste cuvantul corect ghicind literele din care este alcatuit.\n";
-	cout << "5 greseli si jocul se termina.\n\n";
-}
-void Spanzuratoare::Incepe_jocul()      // manipulator de joc
-{
-	while (!logat)
-        {
-		cout << "\n\nNu esti logat!";
-		login();
-        }
-	primeste_cuvant();
-	int greseli = 0;
-	litere_folosite = new std::string[26];
-	strcpy(litere_folosite, "");
-	while (greseli < 5)
-        {
-		cout << "\nGhiceste o litera\n";
-		cout << "Litere folosite pana acum: "; litere_folosite_pana_acum();
-		if (ghicite())
-            {
-			cout << "\n\n";
-			cout << "Ai ghicit! Cuvantul este: " << cuvant << endl << endl;
-			utilizator.victorie();
-			break;
-            }
-		cout << "->";
-		std::string a;
-		cin >> a;
-		if (!isalpha(a))
-            {
-			cout << "\n\nIntrare nevalida." << endl;
-            }
-		else if (contine(litere_folosite, tolower(a)))
-            {
-			cout << "\nLitera a fost deja folosita!" << endl;
-            }
-		else
-            {
-			std::string temp[2];
-			temp[0] = tolower(a);
-			temp[1] = '\0';
-			strcat(litere_folosite, temp);
-			if (contine(cuvant, tolower(a)))
-				cout << "\nAi ghicit!" << endl;
-			else
-                {
-				greseli++;
-				if (greseli == 5)
-                    {
-					cout << "Ai facut 5 greseli! Jocul s-a terminat." << endl;
-					utilizator.infrangere();
-					cout << "Cuvantul este: " << cuvant << endl << endl;
+	private:
+		char *raspuns=""; //Stocheaza cuvantul care trebuie ghicit
+		string arata=""; //Asta arata utilizatorului cat de departe au ajuns cu ghicitul
+		string indiciu; //Indiciu pentru cuvantul care trebuie ghicit
+		int p1_nr = 0; //Runde castigate de Player 1
+		int p2_nr = 0; //Runde castigate de Player 2
+		int nr = 1; //Total runde jucate
+		string p1 = "Player 1"; //Numele default al Player 1, se poate schimba din meniu
+		string p2 = "Player 2"; //Numele default al Player 2, se poate schimba din meniu
+
+	public:
+		HANDLE H_Console = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		/* functie pentru a seta pozitia cursorului in output window */
+		void gotoXY(int X, int Y)
+		{
+			COORD position;
+			position.X = X;
+			position.Y = Y;
+			SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), position);
+		}
+
+		/*functie pentru a arata casutele pe ecran*/
+		void printBox(int X, int Y, int width, int length)
+		{
+			/*
+			C_S_S = Colt stanga sus
+			C_D_S = Colt dreapta sus
+			C_S_J = Colt stanga jos
+			C_D_J = Colt dreapta jos
+			L_O	= Linie orizontala
+			L_V = Linie verticala
+			*/
+			char C_S_S = 201, C_D_S = 187, C_S_J = 200, C_D_J = 188;
+			char L_O = 205, L_V = 186;
+			width -= 2;	length -= 2;
+
+			gotoXY(X, Y);
+			cout << C_S_S;
+			for (int i = 0; i < width; i++)
+				cout << L_O;
+			cout << C_D_S;
+
+			for (int i = 0; i < length; i++)
+			{
+				gotoXY(X, Y + (i + 1));
+				cout << L_V;
+				gotoXY(X + (width + 1), Y + (i + 1));
+				cout << L_V;
+			}
+			gotoXY(X, Y + length);
+			cout << C_S_J;
+
+			for (int i = 0; i < width; i++)
+				cout << L_O;
+			cout << C_D_J;
+		}
+
+		void clearScreen()
+		{
+			for (int i = 0; i < 24; i++)
+			{
+				gotoXY(3, 1 + i);
+				for (int j = 0; j < 74; j++)
+					cout << " ";
+			}
+		}
+
+		//Functie pentru a arata pagina de start a jocului
+		void hangmanGame()
+		{
+			while (true)
+			 {
+				clearScreen();
+				char logo[7][75];
+				strcpy(logo[0], "HH    HH     AA     NN    NN     GGG    MM          MM     AA     NN    NN");
+				strcpy(logo[1], "HH    HH   AA  AA   NNN   NN   GG   GG  MMM        MMM   AA  AA   NNN   NN");
+				strcpy(logo[2], "HH    HH  AA    AA  NNNN  NN  GG        MMMM      MMMM  AA    AA  NNNN  NN");
+				strcpy(logo[3], "HHHHHHHH  AAAAAAAA  NN NN NN  GG        MM MM    MM MM  AAAAAAAA  NN NN NN");
+				strcpy(logo[4], "HH    HH  AA    AA  NN  NNNN  GG   GGG  MM  MM  MM  MM  AA    AA  NN  NNNN");
+				strcpy(logo[5], "HH    HH  AA    AA  NN   NNN   GG   GG  MM   MMMM   MM  AA    AA  NN   NNN");
+				strcpy(logo[6], "HH    HH  AA    AA  NN    NN     GGG    MM    MM    MM  AA    AA  NN    NN");
+
+				//Printarea logoului
+				for (int i = 0; i < 7; i++)
+				{
+					SetConsoleTextAttribute(H_Console, 12);
+					gotoXY(3, 1 + i);
+					puts(logo[i]);
+				}
+				SetConsoleTextAttribute(H_Console, 9);
+				printBox(28, 8, 30, 14); //Casuta pentru meniu
+				printBox(14, 22 , 22 , 4); //Casuta de scor pentru Player 1
+				printBox(46, 22 , 22 , 4); //Casuta de scor pentru Player 2
+
+				/*Meniu*/
+				gotoXY(31, 10);
+				cout << "(1)-> Incepe Jocul ";
+				gotoXY(31, 12);
+				cout << "(2)-> Schimba Numele ";
+				gotoXY(31, 14);
+				cout << "(3)-> Instructiuni";
+				gotoXY(31, 16);
+				cout << "(4)-> Cuvant Si Indiciu";
+				gotoXY(31, 18);
+				cout << "(5)-> Iesire";
+				gotoXY(18,23);
+				cout<<p1<<" : "<<p1_nr;
+				gotoXY(50,23);
+				cout<<p2<<" : "<<p2_nr;
+
+				//Selectarea optiunilor
+				gotoXY(0, 29);
+				char ch = getch();
+					if (ch == '1')
+						startGame(); //Incepe jocul
+					else if (ch=='2') //Ia numele jucatorilor ca input
+					{
+						SetConsoleTextAttribute(H_Console, 12);
+						clearScreen();
+						gotoXY(31, 16);
+						cout<<"Player 1 : ";
+						gotoXY(31,18);
+						getline(cin,p1);
+						gotoXY(31, 20);
+						cout<<"Player 2 : ";
+						gotoXY(31,22) ;
+						getline(cin,p2);
+						continue ;
+					}
+					else if (ch == '3')
+						instructions(); //Arata instructiunile
+					else if (ch == '4') //Ia cuvantul si indiciul ca input
+					{
+						SetConsoleTextAttribute(H_Console, 12);
+						clearScreen();
+						char word1[100];
+						gotoXY(31, 16);
+						cout<<"Introdu cuvantul"; //Introdu cuvantul de ghicit
+						gotoXY(31,18);
+						cin>>word1;
+						storetheword(word1); //Retine cuvantul
+						gotoXY(31,20);
+						cout<<"Introdu indiciul : " ; scanf("\n"); //Introdu un indiciu pentru celalalt jucator
+						gotoXY(31,22);
+						getline(cin,indiciu); //Retine indiciul
+						continue;
+			        }
+					else if (ch == '5')
+						exit(0); //Inchide programul
+					else
+						continue;
+				}
+		}
+
+		//Functie pentru initializarea jocului
+		void startGame()
+		{
+			if(raspuns=="" or strlen(raspuns)<=1)  //Daca nu este introdus niciun cuvant sau cuvantul are o litera, jucatorul este rugat sa intrdouca un cuvant valid
+			{
+				SetConsoleTextAttribute(H_Console, 12);
+				clearScreen();
+				gotoXY(25, 12);
+				cout<<"Introdu un cuvant valid!";
+				gotoXY(25, 14);
+				cout<<"Apasa orice tasta pentru a te intoarce la meniul principal";
+				char any = getch();
+				return;
+			}
+			while (true)
+			{
+				nr+=1 ; //Rundele totale cresc cu cate una
+				playGame(); //Jocul incepe
+//				int check = 0;
+				char chek = getch() ;
+				break ;
+			}
+			hangmanGame();
+		}
+
+		//Functie unde sunt ghicite literele
+		void playGame()
+		{
+			clearScreen();
+			int lives = 0, check = 0;
+			char guess[100], input;
+			char *word;
+			//Retinerea cuvantului
+			word = getWord();
+			//Transformarea cuvantului in asterixuri
+			encryptWord(word, guess);
+			printBox(10, 3, 19, 4);
+			printBox(56, 3, 14, 4);
+			printBox(46, 9, 24, 17);
+			while (true)
+			 {
+				//Printarea cuvantului
+				gotoXY(12, 4);
+				cout << "Cuvant : ";
+				puts(guess);
+				gotoXY(12,6);
+				cout<< "Indiciu : "; //Arata indiciul
+				cout<<indiciu;
+				//Printarea vietilor ramase
+				gotoXY(58, 4);
+				cout << "Vieti : " << (7 - lives);
+				//Arata spanzuratoarea
+				hanging(lives);
+				if (lives == 7)
 					break;
-                    }
-				cout << "\nAi gresit! ";
-				cout << (5 - greseli) << " greseli ramase!" << endl;
-                }
-            }
-        }
-	utilizator.arata_date(0);
-	cout << "Vrei sa joci din nou? (d/[n])\n";
-	std::string ch;
-	cin >> ch;
-	if (tolower(ch) == 'y')
-		Incepe_jocul();		// joaca din nou
-	else
-        {
-		cout << "O zi placuta!";
-		exit(0);
-        }
-}
-int Spanzuratoare::ghicite()       // verifica daca cuvantul ghicit este corect
-{
-	int m = strlen(litere_folosite);
-	int n = strlen(cuvant);
-	int len = 0;
-	std::string string[100];		// cuvinte ghicite pana acum
-	strcpy(string, "");
-	for (int i = 0; i < n; i++)
-        {
-		if (contine(litere_folosite, cuvant[i]))
+				if (checkWord(word, guess))
+				{
+					check = 1;
+					break;
+				}
+				//Ghicirea
+				gotoXY(12, 11);
+				cout << "Ghiceste : ";
+				input = getche();
+				gotoXY(14, 14);
+				if (checkGuess(word, guess, input))
+				{
+					cout << "                        ";
+					gotoXY(14, 14);
+					cout << "Corect!";
+				}
+				else
+				{
+					cout << "Ai pierdut o viata";
+					lives++;
+				}
+			}
+
+			//Printarea rezultatului
+			printBox(10, 18, 25, 8);
+			SetConsoleTextAttribute(H_Console, 12);
+			gotoXY(18, 20);
+			if (check == 1)
+			{
+				cout << "AI CASTIGAT!";
+				/* Daca runda este impara joaca Player 1, altfel joaca Player 2*/
+				if (!(nr&1))
+					p1_nr+=1;
+				else
+					p2_nr+=1;
+			}
+			else
+				cout << "AI PIERDUT!";
+			SetConsoleTextAttribute(H_Console, 9);
+		}
+
+		/*Functie care returneaza cuvantul care trebuie ghicit*/
+		char* getWord()
+		{
+			return raspuns;
+		}
+
+		//Functie care mascheaza cuvantul
+		void encryptWord(char* word, char *guess)
+		{
+			int i = 0;
+			guess[0] = word[0];
+			//Se retin toate caracterele cuvantului drept asterixuri
+			while (word[i] != '\0')
+			{
+				guess[i] = '*';
+				i++;
+			}
+			guess[i] = '\0';
+		}
+
+		//Fucntie care arata cat de aproape este jucatorul de a pierde runda
+		void hanging(int wrong)
+		{
+			static char hang[12][20];
+			if (wrong == 0)
+			{
+				strcpy(hang[0], " _____________    ");
+				strcpy(hang[1], " |           |    ");
+				strcpy(hang[2], " |           |    ");
+				strcpy(hang[3], "             |    ");
+				strcpy(hang[4], "             |    ");
+				strcpy(hang[5], "             |    ");
+				strcpy(hang[6], "             |    ");
+				strcpy(hang[7], "             |    ");
+				strcpy(hang[8], "             |    ");
+				strcpy(hang[9], "             |    ");
+				strcpy(hang[10], "             |    ");
+				strcpy(hang[11], "         ---------");
+			}
+			else if (wrong == 1)
+				strcpy(hang[3], " O           |   ");
+			else if (wrong == 2)
+				strcpy(hang[4], " |           |   ");
+			else if (wrong == 3)
+				strcpy(hang[4], "/|           |   ");
+			else if (wrong == 4)
+				strcpy(hang[4], "/|\\         |   ");
+			else if (wrong == 5)
+				strcpy(hang[5], " |           |   ");
+			else if (wrong == 6)
+				strcpy(hang[6], "/            |   ");
+			else
+				strcpy(hang[6], "/ \\         |   ");
+
+
+			//Arata spanzuratoarea
+			for (int i = 0; i < 12; i++)
+			{
+				if (wrong == 7)
+					SetConsoleTextAttribute(H_Console, 12);
+				gotoXY(49, 11 + i);	puts(hang[i]);
+			}
+			if (wrong == 7)
+				SetConsoleTextAttribute(H_Console, 9);
+		}
+
+		//Functie care arata daca o litera este corecta
+		bool checkGuess(char* word, char *guess, char ch)
+		{
+			bool check = false;
+			int i = 0;
+			ch = toupper(ch);
+			char temp;
+			while (word[i] != '\0')
+			{
+				temp = toupper(word[i]);
+				if (temp == ch)
+				{
+					guess[i] = word[i];
+					check = true;
+				}
+				i++;
+			}
+			return check;
+		}
+
+		bool checkWord(string word, char *guess)
+		{
+			int i = 0;
+			while (word[i] != '\0')
             {
-			len++;
-			std::string temp[2];
-			temp[0] = cuvant[i];
-			temp[1] = '\0';
-			strcat(string, temp);
-            }
-		else
+				if (word[i] != guess[i])
+					return false;
+				i++;
+			}
+			return true;
+		}
+
+		//Functie care arata instructiunile pe ecran
+		void instructions()
+		{
+			SetConsoleTextAttribute(H_Console, 12);
+			clearScreen();
+			char about[19][78];
+			strcpy(about[0], "                              HANGMAN                              ");
+			strcpy(about[1], "                                                                   ");
+			strcpy(about[2], "         IN ACEST JOC, TREBUIE SA GHICESTI CUVANTUL SECRET!        ");
+			strcpy(about[3], "                					  			                     ");
+			strcpy(about[4], "          AI LA DISPOZITIE 7 VIETI PENTRU A GHICI CUVANTUL         ");
+			strcpy(about[5], "             DACA GHICESTI CUVANTUL, AI CASTIGAT RUNDA!            ");
+			strcpy(about[6], "                                                                   ");
+			strcpy(about[7], "      DACA NU GHICESTI CUVANTUL SI TI SE TERMINA CELE 7 VIETI,     ");
+			strcpy(about[8], "                          AI PIERDUT RUNDA                         ");
+			strcpy(about[9], "                                                                   ");
+			strcpy(about[10], "        PRIMA DATA, PLAYER 1 ALEGE UN CUVANT SI UN INDICIU        ");
+			strcpy(about[11], "                                                                  ");
+			strcpy(about[12], "              PLAYER 2 TREBUIE SA GHICEASCA CUVANTUL              ");
+			strcpy(about[13], "                                                                  ");
+            strcpy(about[14], "           DUPA TERMINAREA RUNDEI SE INVERSEAZA ROLURILE          ");
+
+			//Printarea instructiunilor
+			for (int i = 0; i < 19; i++)
             {
-			strcat(string, "?");
+				gotoXY(1, 5 + i); puts(about[i]);
             }
-        }
-	if (len == n)
-		return 1;
-	cout << "\nCuvinte ghicite pana acum: " << string << endl;
-	return 0;
-}
+			gotoXY(0, 29);
+			getch();
+			hangmanGame();
+		}
+		void storetheword(char *x)
+		{
+		    raspuns=x;
+		}
+};
+
 int main()
 {
-	Spanzuratoarea;
+	Hangman instance ; //Crearea unui obiect instanta a clasei hangman
+	system("title HANGMAN"); //Setarea titlului
+	system("mode 80,30"); //Setarea ecranului
+	system("color 08"); //Setarea culorii
+	instance.printBox(0, 0, 80, 30); //Printarea marginilor casutei
+	instance.hangmanGame(); //Afisarea meniului
+	return 0;
 }
